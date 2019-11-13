@@ -1,4 +1,4 @@
-package UI
+package main
 
 import (
 	_ "bytes"
@@ -16,11 +16,28 @@ import (
 	"github.com/zserge/lorca"
 )
 
+func init() {
+	html1 = `<html>
+	<head>
+	<title>Edownloader</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	</head>
+		<body>			
+			<div class="field half"> `
+
+	html2 = `<div class="done"></div>		
+	</body>
+	</html> 
+	`
+
+}
+
 var (
-	fname string
+	html1, html2 string
 )
 
-func Html() {
+func main() {
 	ui, err := lorca.New("", "", 520, 320)
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +50,7 @@ func Html() {
 	ui.Bind("download", func(filename string) {
 		ui.Eval(`document.querySelector('.done').innerText = '` + filename + ` done'`)
 	})
-	<-ui.Done()	
+	<-ui.Done()
 }
 
 //call
@@ -46,8 +63,6 @@ func makehtml() string {
 			<input type="button" onclick="download(document.querySelector('#URL').value)" style="width:100px;height:30px;font-size:16px;" value="Download">
 	`
 
-	html1 := Read("html1")
-	html2 := Read("html2")
 	return html1 + input + html2
 }
 
