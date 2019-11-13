@@ -1,4 +1,4 @@
-package main
+package UI
 
 import (
 	_ "bytes"
@@ -37,7 +37,7 @@ var (
 	html1, html2 string
 )
 
-func main() {
+func Html() {
 	ui, err := lorca.New("", "", 520, 320)
 	if err != nil {
 		log.Fatal(err)
