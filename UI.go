@@ -1,81 +1,83 @@
-package UI
+package main
 
 import (
-	_ "bytes"
-	_ "fmt"
-	_ "io"
-	"io/ioutil"
-	"log"
-	_ "net/http"
-	"net/url"
-	_ "os"
-	_ "strconv"
-	_ "strings"
-	"unsafe"
-
 	"github.com/zserge/lorca"
+	"log"
+	"net/url"
 )
 
-func init() {
-	html1 = `<html>
+var (
+	viewtitle = "Title"
+
+	
+	inputlabel     = "輸入"
+	bottonname        = "執行"
+	vieweight  int = 520
+	viewheight int = 320
+	
+)
+
+func main() {
+
+	Inputtitle("視窗標題")	
+	Inputlabel("標題")
+	Inputbotton("按鈕名稱")
+	Makeview(500, 400)
+
+	ui, err := lorca.New("", "", vieweight, viewheight)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ui.Close()
+
+	html := buildhtml()
+
+	ui.Load("data:text/html," + url.PathEscape(html))
+	ui.Bind("execute", func(input string) {
+		ui.Eval(`document.querySelector('.done').innerText = '` + input + ` done'`)
+	})
+	<-ui.Done()
+}
+
+//out Call
+
+func Inputtitle(title string){
+	viewtitle = title
+}
+
+func Makeview(width int, height int) {
+	vieweight = width
+	viewheight = height
+}
+
+func Inputlabel(label string) {
+	inputlabel = label
+}
+func Inputbotton(botton string) {
+	bottonname = botton
+}
+
+//in call
+func buildhtml() string {
+	htmlstr := `<html>
 	<head>
-	<title>Edownloader</title>
+	<title>`+viewtitle+`</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	</head>
 		<body>			
 			<div class="field half"> `
 
-	html2 = `<div class="done"></div>		
+	htmlend := `<div class="done"></div>		
 	</body>
 	</html> 
 	`
 
-}
-
-var (
-	html1, html2 string
-)
-
-func Html() {
-	ui, err := lorca.New("", "", 520, 320)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ui.Close()
-
-	html := makehtml()
-
-	ui.Load("data:text/html," + url.PathEscape(html))
-	ui.Bind("download", func(filename string) {
-		ui.Eval(`document.querySelector('.done').innerText = '` + filename + ` done'`)
-	})
-	<-ui.Done()
-}
-
-//call
-func makehtml() string {
-
-	input := `
-			<label for="name" style="font-size:16px;">請輸入網址</label>
-				<input id="URL" type="text" value=""  SIZE=40  height="35" style="font-size:16px;">
-			</div>
-			<input type="button" onclick="download(document.querySelector('#URL').value)" style="width:100px;height:30px;font-size:16px;" value="Download">
-	`
-
-	return html1 + input + html2
-}
-
-//讀取文件
-func Read(filename string) string {
-	html, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return String(html)
-}
-
-//將[]byte轉成string
-func String(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
+	return htmlstr+
+	 `
+	 	<label for="name" style="font-size:16px;">` + inputlabel + `</label>
+		<input id="input" type="text" value=""  SIZE=40  height="35" style="font-size:16px;">
+		</div>
+		<input type="button" onclick="execute(document.querySelector('#input').value)" style="width:100px;height:30px;font-size:16px;" value="` + bottonname + `">
+	`+ htmlend
 }
